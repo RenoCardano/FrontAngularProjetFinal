@@ -22,6 +22,7 @@ import {UserService} from "./service/user.service";
 import { NewUserComponent } from './new-user/new-user.component';
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {ClientService} from "./service/client.service";
+import {FullCalendarModule} from "@fullcalendar/angular";
 
 const appRoute : Routes = [
   {path: 'auth',  component: HostComponent },
@@ -49,14 +50,15 @@ const appRoute : Routes = [
     UserListComponent,
     NewUserComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    RouterModule.forRoot(appRoute),
-    ReactiveFormsModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        RouterModule.forRoot(appRoute),
+        ReactiveFormsModule,
+        HttpClientModule,
+        FullCalendarModule
+    ],
   providers: [
     AppareilService,
     HttpClientModule,
