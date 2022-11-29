@@ -1,0 +1,32 @@
+<div class="col-sm-8 col-sm-offset-2">
+  {{userForm.value | json}}
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="firstname" > Prénom </label>
+      <input class="form-control" id="firstname" name="firstname" formControlName="firstname">
+    </div>
+    <div class="form-group">
+      <label for="lastname" > Nom </label>
+      <input class="form-control" id="lastname" name="lastname" formControlName="lastname">
+    </div>
+    <div class="form-group">
+      <label for="email" > Email </label>
+      <input class="form-control" id="email" name="email" formControlName="email" >
+    </div>
+    <div class="form-group">
+      <label for="drinkPreference"> Quelle boisson préférez-vous ? </label>
+      <select class="form-control" id="drinkPreference"  name="drinkPreference" formControlName="drinkPreference">
+        <option value="coca">Coca </option>
+        <option value="pepsi">Pepsi </option>
+      </select>
+    </div>
+
+    <div formArrayName='hobbies' *ngFor="let hobbyControl of Hobbies.controls; let i = index">
+        <div class="row" [formGroupName]="i">
+        <input type="text" class="form-control" formControlName='hobbie' id="{{'hobbie'+i}}" >
+        </div>
+      </div>
+      <button type="button" (click)="addHobby()" class="btn btn-success">Ajouter</button>
+      <button class="btn btn-primary"  usertype="submit">Enregistrer</button>
+  </form>
+</div>
