@@ -1,10 +1,8 @@
-export interface Cours{
-  idCours: number,
-  nomCour: string,
-  heure_debut: string,
-  heure_fin: string,
-  classe: Classe,
-  enseignement: Enseignement,
-  salleClasse: SalleClasse,
-  jourCours: Jour;
+import {Enseignant} from "./enseignant.modele";
+import {Matiere} from "./matiere.modele";
+
+export interface Enseignement{
+  idEnseignement: number,
+  enseignant: Enseignant,
+  matiereEnseignee: Matiere
 }
