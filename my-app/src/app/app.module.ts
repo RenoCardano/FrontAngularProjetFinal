@@ -23,6 +23,7 @@ import { NewUserComponent } from './new-user/new-user.component';
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {ClientService} from "./service/client.service";
 import {FullCalendarModule} from "@fullcalendar/angular";
+import { CalendarComponent } from './calendar/calendar.component';
 
 const appRoute : Routes = [
   {path: 'auth',  component: HostComponent },
@@ -48,7 +49,8 @@ const appRoute : Routes = [
     FourOFourComponent,
     EditAppareilComponent,
     UserListComponent,
-    NewUserComponent
+    NewUserComponent,
+    CalendarComponent
   ],
     imports: [
         BrowserModule,
