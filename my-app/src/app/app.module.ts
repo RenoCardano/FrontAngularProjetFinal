@@ -27,6 +27,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 
 const appRoute : Routes = [
   {path: 'auth',  component: HostComponent },
+  {path: 'plannings', canActivate : [AuthGard] , component: CalendarComponent},
   {path: 'appareils', canActivate : [AuthGard] , component: ViewComponent},
   {path: 'appareils/:id', canActivate : [AuthGard] , component: SingleappareilComponent },
   {path: 'users', canActivate : [AuthGard] , component: UserListComponent },
