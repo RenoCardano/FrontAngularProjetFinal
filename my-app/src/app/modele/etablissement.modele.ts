@@ -4,5 +4,6 @@ export interface Etablissement{
   adresse: string,
   type: string,
   numeroTelephone: string,
-  logo: string
+  logo: string,
+  salles: any
 }

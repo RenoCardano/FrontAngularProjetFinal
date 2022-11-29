@@ -4,5 +4,6 @@ import {Matiere} from "./matiere.modele";
 export interface Enseignement{
   idEnseignement: number,
   enseignant: Enseignant,
-  matiereEnseignee: Matiere
+  matiereEnseignee: Matiere,
+  coursList: any
 }

@@ -2,5 +2,6 @@ import {Enseignant} from "./enseignant.modele";
 
 export interface Cours{
   idClasse: number,
-  professeurPrincipal: Enseignant
+  professeurPrincipal: Enseignant,
+  coursList: any
 }

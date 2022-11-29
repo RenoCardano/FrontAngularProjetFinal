@@ -4,5 +4,6 @@ export interface SalleClasse{
   idSalleClasse: number,
   nom: string,
   capacite: number,
-  etablissement: Etablissement
+  etablissement: Etablissement,
+  coursListSalle: any
 }

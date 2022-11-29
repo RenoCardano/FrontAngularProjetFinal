@@ -5,5 +5,6 @@ export interface Matiere{
   codeMat: string,
   couleur: string,
   nom: string,
-  enseignement: Enseignement
+  enseignement: Enseignement,
+  sallesExclues: any
 }
