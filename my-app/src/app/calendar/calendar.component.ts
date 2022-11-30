@@ -1,10 +1,13 @@
-import {Component, ViewChild} from '@angular/core';
-import {CalendarOptions, DateSelectArg, EventApi, EventClickArg} from "@fullcalendar/core";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {Calendar, CalendarOptions, DateSelectArg, EventApi, EventClickArg, EventInput} from "@fullcalendar/core";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import {createEventId, INITIAL_EVENTS} from "../utils/event-utils";
 import {CalendarService} from "../service/calendar.service";
 import {CoursFormComponent} from "../cours-form/cours-form.component";
+import {CoursService} from "../service/cours.service";
+import {Validators} from "@angular/forms";
+import {Cours} from "../modele/cours.modele";
 
 @Component({
   providers: [CoursFormComponent],
@@ -12,14 +15,15 @@ import {CoursFormComponent} from "../cours-form/cours-form.component";
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit{
 
   @ViewChild('modalFormComponent', { static: true }) coursFormComponent!: CoursFormComponent;
+  cours: Cours[]  = [];
+  size!: number;
 
-  constructor(private calendarService : CalendarService) {
-  }
-
-  calendarVisible = true;
+  courList!: any[];
+  courEvents: EventInput[] = [];
+  courModel!: EventInput;
   calendarOptions: CalendarOptions = {
     plugins: [
       interactionPlugin,
@@ -36,7 +40,6 @@ export class CalendarComponent {
     slotMinTime: "08:00:00",
     slotMaxTime: "19:00:00",
     initialView: 'timeGridWeek',
-    initialEvents: INITIAL_EVENTS,
     weekends: true,
     weekNumbers: false,
     editable: true,
@@ -52,33 +55,51 @@ export class CalendarComponent {
     eventRemove:
     */
   };
-  currentEvents: EventApi[] = [];
+  courEventsApi: EventApi[] = [];
+
+  constructor(private cs: CoursService) {
+  }
+
+  ngOnInit(): void {
+    const n = this.cs.findAll().subscribe(maliste => {this.cours = maliste; this.size = maliste.length;});
+
+    const convert = this.cs.findAll().subscribe((result: any) => {
+      const TODAY_STR = new Date().toISOString().replace(/T.*$/, ''); // YYYY-MM-DD of today
+      for (let i = 0; i < result.length; i++) {
+        this.courModel = {
+          id: result[i].idCours.toString(),
+          title: result[i].nomCour,
+          start: result[i].heure_debut,
+          end: result[i].heure_fin
+        };
+        this.courEvents.push(this.courModel);
+      }
+    },error => {},() => {
+      if(this.courEvents.length>0){
+        this.calendarOptions.events =  this.courEvents;
+      }
+    });
+  }
+
+  calendarVisible = true;
 
   handleCalendarToggle() {
     this.calendarVisible = !this.calendarVisible;
   }
 
-  handleWeekendsToggle() {
-    const { calendarOptions } = this;
-    calendarOptions.weekends = !calendarOptions.weekends;
-  }
-
   async handleDateSelect(selectInfo: DateSelectArg) {
     const calendarApi = selectInfo.view.calendar;
-    const responseFormAddCours = await this.coursFormComponent.openModal().then(c => {
+    const responseFormAddCours = await this.coursFormComponent.openModal(selectInfo.startStr,selectInfo.endStr).then(c => {
       return c;
-    });
+    }).catch(reason => console.log(reason));
 
     calendarApi.unselect(); // clear date selection
-    console.log("DEBUT " + selectInfo.startStr);
-    console.log("END " + selectInfo.endStr);
-    if (responseFormAddCours) {
+    if (responseFormAddCours && (typeof responseFormAddCours)!= undefined) {
       calendarApi.addEvent({
         id: createEventId(),
         title: responseFormAddCours.nomCour,
         start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
+        end: selectInfo.endStr
       });
     }
   }
@@ -90,7 +111,7 @@ export class CalendarComponent {
   }
 
   handleEvents(events: EventApi[]) {
-    this.currentEvents = events;
+    this.courEventsApi = events;
   }
 
 }

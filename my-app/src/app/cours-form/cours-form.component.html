@@ -4,12 +4,12 @@
 <ng-template id="content" #content let-modal>
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled(false)"></button>
       </div>
       <div class="modal-body">
           <h2>Formulaire d'ajout de client</h2>
         <!--   <p *ngFor="let c of cours">{{coursToString(c)}}</p> -->
-           <form [formGroup]="ourform" (ngSubmit)="addCours()">
+           <form [formGroup]="ourform" (ngSubmit)="onCloseHandled(true)">
              <div class="container">
                <div class="col-md-5 mb-3">
                  <label for="nomCour">Nom du cours</label>
@@ -42,16 +42,12 @@
                  <label for="jourCours">Heure de fin</label>
                  <input class="form-control"  id="jourCours" formControlName="jourCours" type="text" aria-describedby="aideCompanyName"/>
                </div>
-               <br><br>
-               <button class="col-md-5 mb-3" type="submit">Ajouter un cours</button>
+             </div>
+             <div class="modal-footer">
+               <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Ajouter</button>
              </div>
            </form>
        </div>
-       <div class="modal-footer">
-         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled()">Close</button>
-         <button type="button" class="btn btn-primary">Understood</button>
-       </div>
-
   </ng-template>
 <br>
 
