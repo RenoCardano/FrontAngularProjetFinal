@@ -1,0 +1,65 @@
+
+
+<!-- Modal -->
+<div class="modal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled()"></button>
+      </div>
+      <div class="modal-body">
+          <h2>Formulaire d'ajout de client</h2>
+        <!--   <p *ngFor="let c of cours">{{coursToString(c)}}</p> -->
+           <form [formGroup]="ourform" (ngSubmit)="addCours()">
+             <div class="container">
+               <div class="col-md-5 mb-3">
+                 <label for="nomCour">Nom du cours</label>
+                 <input class="form-control"  id="nomCour" formControlName="nomCour" type="text" aria-describedby="aideNomCours"/>
+                 <small id="aideNomCours" class="form-text" *ngIf="ourform.controls['nomCour']?.errors?.['required']">Le nom du cours est requis.</small>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="heure_debut">Heure de début</label>
+                 <input class="form-control"  id="heure_debut" formControlName="heure_debut" type="text" aria-describedby="aideHeureDebut"/>
+                 <small id="aideHeureDebut" class="form-text" *ngIf="ourform.controls['heure_debut']?.errors?.['required']">L'heure de début est requise.</small>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="heure_fin">Heure de fin</label>
+                 <input class="form-control"  id="heure_fin" formControlName="heure_fin" type="text" aria-describedby="aideHeureFin"/>
+                 <small id="aideHeureFin" class="form-text" *ngIf="ourform.controls['heure_fin']?.errors?.['required']">L'heure de fin est requise.</small>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="classe">Classe</label>
+                 <input class="form-control"  id="classe" formControlName="classe" type="text" aria-describedby="aideCompanyName"/>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="enseignement">Enseignement</label>
+                 <input class="form-control"  id="enseignement" formControlName="enseignement" type="text" aria-describedby="aideCompanyName"/>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="salleClasse">Heure de fin</label>
+                 <input class="form-control"  id="salleClasse" formControlName="salleClasse" type="text" aria-describedby="aideCompanyName"/>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="jourCours">Heure de fin</label>
+                 <input class="form-control"  id="jourCours" formControlName="jourCours" type="text" aria-describedby="aideCompanyName"/>
+               </div>
+               <br><br>
+               <button class="col-md-5 mb-3" type="submit">Ajouter un cours</button>
+             </div>
+           </form>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCloseHandled()">Close</button>
+         <button type="button" class="btn btn-primary">Understood</button>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+<br>
+

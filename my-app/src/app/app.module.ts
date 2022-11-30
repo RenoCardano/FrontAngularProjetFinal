@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -24,10 +23,11 @@ import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {ClientService} from "./service/client.service";
 import {FullCalendarModule} from "@fullcalendar/angular";
 import { CalendarComponent } from './calendar/calendar.component';
+import { CoursFormComponent } from './cours-form/cours-form.component';
 
 const appRoute : Routes = [
   {path: 'auth',  component: HostComponent },
-  {path: 'plannings', canActivate : [AuthGard] , component: CalendarComponent},
+  {path: 'plannings', component: CalendarComponent},
   {path: 'appareils', canActivate : [AuthGard] , component: ViewComponent},
   {path: 'appareils/:id', canActivate : [AuthGard] , component: SingleappareilComponent },
   {path: 'users', canActivate : [AuthGard] , component: UserListComponent },
@@ -51,7 +51,8 @@ const appRoute : Routes = [
     EditAppareilComponent,
     UserListComponent,
     NewUserComponent,
-    CalendarComponent
+    CalendarComponent,
+    CoursFormComponent
   ],
     imports: [
         BrowserModule,
@@ -71,6 +72,6 @@ const appRoute : Routes = [
     AuthGard,
     UserService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, CoursFormComponent]
 })
 export class AppModule { }
