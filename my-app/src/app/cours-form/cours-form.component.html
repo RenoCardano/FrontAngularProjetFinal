@@ -7,10 +7,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled(false)"></button>
       </div>
       <div class="modal-body">
-          <h2>Formulaire d'ajout de client</h2>
+          <h2>Formulaire d'ajout de cours</h2>
         <!--   <p *ngFor="let c of cours">{{coursToString(c)}}</p> -->
            <form [formGroup]="ourform" (ngSubmit)="onCloseHandled(true)">
              <div class="container">
+               <div class="col-md-5 mb-3">
+                 <label id="jourCours">Jour: {{getDayFromInt(jourSelected)}}</label>
+               </div>
                <div class="col-md-5 mb-3">
                  <label for="nomCour">Nom du cours</label>
                  <input class="form-control"  id="nomCour" formControlName="nomCour" type="text" aria-describedby="aideNomCours"/>
@@ -18,12 +21,16 @@
                </div>
                <div class="col-md-5 mb-3">
                  <label for="heure_debut">Heure de début</label>
-                 <input class="form-control"  id="heure_debut" formControlName="heure_debut" type="text" aria-describedby="aideHeureDebut"/>
+                 <select id="heure_debut" class="form-select" aria-label="Default select example" formControlName="heure_debut" aria-describedby="aideHeureDebut">
+                   <option *ngFor="let hour of hoursStart" [value]="hour.value" [id]="hour.value">{{hour.viewValue}}</option>
+                 </select>
                  <small id="aideHeureDebut" class="form-text" *ngIf="ourform.controls['heure_debut']?.errors?.['required']">L'heure de début est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
                  <label for="heure_fin">Heure de fin</label>
-                 <input class="form-control"  id="heure_fin" formControlName="heure_fin" type="text" aria-describedby="aideHeureFin"/>
+                 <select id="heure_fin" class="form-select" aria-label="Default select example" formControlName="heure_fin" aria-describedby="aideHeureFin">
+                   <option *ngFor="let hour of hoursEnd" [value]="hour.value"  [id]="hour.value">{{hour.viewValue}}</option>
+                 </select>
                  <small id="aideHeureFin" class="form-text" *ngIf="ourform.controls['heure_fin']?.errors?.['required']">L'heure de fin est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
@@ -37,10 +44,6 @@
                <div class="col-md-5 mb-3">
                  <label for="salleClasse">Heure de fin</label>
                  <input class="form-control"  id="salleClasse" formControlName="salleClasse" type="text" aria-describedby="aideCompanyName"/>
-               </div>
-               <div class="col-md-5 mb-3">
-                 <label for="jourCours">Heure de fin</label>
-                 <input class="form-control"  id="jourCours" formControlName="jourCours" type="text" aria-describedby="aideCompanyName"/>
                </div>
              </div>
              <div class="modal-footer">

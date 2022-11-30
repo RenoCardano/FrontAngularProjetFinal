@@ -10,6 +10,11 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {Calendar} from "@fullcalendar/core";
 
+interface Hour {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'app-cours-form',
   templateUrl: './cours-form.component.html',
@@ -25,6 +30,9 @@ export class CoursFormComponent implements OnInit{
   modalReference!: NgbModalRef;
   startTimeSelect!: string;
   endTimeSelect!: string;
+  endDaySelect!: string;
+  startDaySelect!: string;
+  jourSelected!: number;
 
   constructor(private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
 
@@ -48,16 +56,32 @@ export class CoursFormComponent implements OnInit{
     CoursFormComponent.coursObj = {
       idCours: 0,
       nomCour: formValues.nomCour,
-      heure_debut: this.startTimeSelect,
-      heure_fin: this.endTimeSelect,
+      heure_debut: this.startDaySelect+formValues.heure_debut,
+      heure_fin: this.endDaySelect+formValues.heure_fin,
       /*classe: null,
       enseignement: {},
-      salleClasse: {},
-      jourCours: {}*/ //TODO ajouter les elements dans cour
+      salleClasse: {},*/
+      jourCours: {
+        idJour: this.jourSelected,
+        jour: this.getDayFromInt(this.jourSelected),
+        coursJourList: null
+      } //TODO ajouter les elements dans cour
     };
     console.log("ADDING   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
     this.cs.add(CoursFormComponent.coursObj);
     this.ourform!.reset();
+  }
+
+  getDayFromInt(toSwitch: number): string {
+    console.log(toSwitch);
+    switch (toSwitch) {
+      case 1: return "LUNDI";
+      case 2: return "MARDI";
+      case 3: return "MERCREDI";
+      case 4: return "JEUDI";
+      case 5: return "VENDREDI";
+      default: return "SAMEDI";
+    }
   }
 
   static coursToString(cours: Cours){
@@ -71,12 +95,19 @@ export class CoursFormComponent implements OnInit{
             jourCours: ${cours.jourCours}`
   }
 
-  async openModal(startStr: string, endStr: string): Promise<Cours> {
+  async openModal(startStr: string, endStr: string, jour: number): Promise<Cours> {
     console.log(this.modalContent);
-    this.startTimeSelect = startStr;
-    this.endTimeSelect = endStr;
-    this.ourform.controls['heure_debut'].setValue(this.startTimeSelect);
-    this.ourform.controls['heure_fin'].setValue(this.endTimeSelect);
+    this.startDaySelect = startStr.replace(/T.*$/, '');
+    this.endDaySelect = endStr.replace(/T.*$/, '');
+    // @ts-ignore
+    this.startTimeSelect = startStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
+    // @ts-ignore
+    this.endTimeSelect = endStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
+    console.log(this.startTimeSelect);
+    console.log(this.endTimeSelect);
+    this.ourform.controls['heure_debut'].patchValue(this.startTimeSelect);
+    this.ourform.controls['heure_fin'].patchValue(this.endTimeSelect);
+    this.jourSelected = jour;
     this.modalReference = this.modalService.open(this.modalContent, {centered: true});
     var o = await this.modalReference.result
       .then(function () {
@@ -91,4 +122,33 @@ export class CoursFormComponent implements OnInit{
     }
     this.modalReference.close();
   }
+
+  hoursStart: Hour[] = [
+    {value: 'T08:00:00', viewValue: '8:00'},
+    {value: 'T09:00:00', viewValue: '9:00'},
+    {value: 'T10:00:00', viewValue: '10:00'},
+    {value: 'T11:00:00', viewValue: '11:00'},
+    {value: 'T12:00:00', viewValue: '12:00'},
+    {value: 'T13:00:00', viewValue: '13:00'},
+    {value: 'T14:00:00', viewValue: '14:00'},
+    {value: 'T15:00:00', viewValue: '15:00'},
+    {value: 'T16:00:00', viewValue: '16:00'},
+    {value: 'T17:00:00', viewValue: '17:00'},
+    {value: '18:00:00', viewValue: '18:00'},
+  ];
+
+  hoursEnd: Hour[] = [
+    {value: 'T09:00:00', viewValue: '9:00'},
+    {value: 'T10:00:00', viewValue: '10:00'},
+    {value: 'T11:00:00', viewValue: '11:00'},
+    {value: 'T12:00:00', viewValue: '12:00'},
+    {value: 'T13:00:00', viewValue: '13:00'},
+    {value: 'T14:00:00', viewValue: '14:00'},
+    {value: 'T15:00:00', viewValue: '15:00'},
+    {value: 'T16:00:00', viewValue: '16:00'},
+    {value: 'T17:00:00', viewValue: '17:00'},
+    {value: '18:00:00', viewValue: '18:00'},
+    {value: 'T19:00:00', viewValue: '19:00'},
+  ];
+
 }

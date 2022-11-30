@@ -34,11 +34,14 @@ export class CalendarComponent implements OnInit{
       center: '',
       right: ''
     },
+    locale: 'fr',
     hiddenDays: [0],
     allDaySlot: false,
     dayHeaderFormat: { weekday: 'long' },
     slotMinTime: "08:00:00",
     slotMaxTime: "19:00:00",
+    slotDuration: '01:00:00',
+    expandRows: true,
     initialView: 'timeGridWeek',
     weekends: true,
     weekNumbers: false,
@@ -89,17 +92,16 @@ export class CalendarComponent implements OnInit{
 
   async handleDateSelect(selectInfo: DateSelectArg) {
     const calendarApi = selectInfo.view.calendar;
-    const responseFormAddCours = await this.coursFormComponent.openModal(selectInfo.startStr,selectInfo.endStr).then(c => {
+    const responseFormAddCours = await this.coursFormComponent.openModal(selectInfo.startStr,selectInfo.endStr,selectInfo.start.getDay()).then(c => {
       return c;
     }).catch(reason => console.log(reason));
-
     calendarApi.unselect(); // clear date selection
     if (responseFormAddCours && (typeof responseFormAddCours)!= undefined) {
       calendarApi.addEvent({
         id: createEventId(),
         title: responseFormAddCours.nomCour,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr
+        start: responseFormAddCours.heure_debut,
+        end: responseFormAddCours.heure_fin
       });
     }
   }
