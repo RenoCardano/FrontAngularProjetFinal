@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {CalendarOptions, DateSelectArg, EventApi, EventClickArg} from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from '@fullcalendar/timegrid';
 import {createEventId, INITIAL_EVENTS} from "../utils/event-utils";
 import {CalendarService} from "../service/calendar.service";
 
@@ -18,17 +19,23 @@ export class CalendarComponent {
   calendarVisible = true;
   calendarOptions: CalendarOptions = {
     plugins: [
-      dayGridPlugin,
       interactionPlugin,
+      timeGridPlugin,
     ],
     headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      left: '',
+      center: '',
+      right: ''
     },
-    initialView: 'dayGridMonth',
-    initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+    hiddenDays: [0],
+    allDaySlot: false,
+    dayHeaderFormat: { weekday: 'long' },
+    slotMinTime: "08:00:00",
+    slotMaxTime: "19:00:00",
+    initialView: 'timeGridWeek',
+    initialEvents: INITIAL_EVENTS,
     weekends: true,
+    weekNumbers: false,
     editable: true,
     selectable: true,
     selectMirror: true,
