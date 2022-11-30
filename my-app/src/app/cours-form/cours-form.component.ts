@@ -1,23 +1,32 @@
-import {Component, OnInit} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {CoursService} from "../service/cours.service";
 import {Cours} from "../modele/cours.modele";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Classe} from "../modele/classe.modele";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-cours-form',
   templateUrl: './cours-form.component.html',
   styleUrls: ['./cours-form.component.css']
 })
+
 export class CoursFormComponent implements OnInit{
 
+  @ViewChild('content', { static: true }) modalContent!: ElementRef;
+  static coursObj: Cours;
   ourform!: FormGroup;
   cours: Cours[]  = [];
   size!: number;
   nomTest!: string | undefined;
   display = "none";
+  modalReference!: NgbModalRef;
 
-  constructor(private cs: CoursService, private fb: FormBuilder) { }
+  constructor(private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.ourform! = this.fb.group({
@@ -40,7 +49,7 @@ export class CoursFormComponent implements OnInit{
   addCours() {
     console.log(this.ourform!.value);
     const formValues = this.ourform!.value;
-    const cours = {
+    CoursFormComponent.coursObj = {
       idCours: 0,
       nomCour: formValues.nomCour,
       heure_debut: formValues.heure_debut,
@@ -50,23 +59,29 @@ export class CoursFormComponent implements OnInit{
       salleClasse: {},
       jourCours: {}
     };
-    console.log(cours);
-    this.cs.add(cours);
-    this.coursToString(cours);
+    console.log("ADDING   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
+    this.cs.add(CoursFormComponent.coursObj);
     this.ourform!.reset();
   }
 
-  coursToString(cours: Cours){
+  static coursToString(cours: Cours){
     return `
             Nom: ${cours.nomCour}
             Heure de début: ${cours.heure_debut}
             Heure de fin: ${cours.heure_fin}`
   }
 
-  openModal() {
-    this.display = "block";
+  async openModal(): Promise<Cours> {
+    console.log(this.modalContent);
+    this.modalReference = this.modalService.open(this.modalContent, {centered: true});
+    var o = await this.modalReference.result
+      .then(function () {
+        console.log("VALIDATE   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
+        return CoursFormComponent.coursObj;
+      });
+    return o;
   }
   onCloseHandled() {
-    this.display = "none";
+    this.modalReference.close();
   }
 }

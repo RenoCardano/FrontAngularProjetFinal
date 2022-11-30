@@ -25,6 +25,7 @@ import {ClientService} from "./service/client.service";
 import {FullCalendarModule} from "@fullcalendar/angular";
 import { CalendarComponent } from './calendar/calendar.component';
 import { CoursFormComponent } from './cours-form/cours-form.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 const appRoute : Routes = [
   {path: 'auth',  component: HostComponent },
@@ -62,7 +63,8 @@ const appRoute : Routes = [
         RouterModule.forRoot(appRoute),
         ReactiveFormsModule,
         HttpClientModule,
-        FullCalendarModule
+        FullCalendarModule,
+        NgbModule
     ],
   providers: [
     AppareilService,
@@ -73,6 +75,6 @@ const appRoute : Routes = [
     AuthGard,
     UserService
   ],
-  bootstrap: [AppComponent, CoursFormComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

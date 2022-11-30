@@ -1,17 +1,20 @@
-import { Component } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {CalendarOptions, DateSelectArg, EventApi, EventClickArg} from "@fullcalendar/core";
-import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import {createEventId, INITIAL_EVENTS} from "../utils/event-utils";
 import {CalendarService} from "../service/calendar.service";
+import {CoursFormComponent} from "../cours-form/cours-form.component";
 
 @Component({
+  providers: [CoursFormComponent],
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent {
+
+  @ViewChild('modalFormComponent', { static: true }) coursFormComponent!: CoursFormComponent;
 
   constructor(private calendarService : CalendarService) {
   }
@@ -60,16 +63,19 @@ export class CalendarComponent {
     calendarOptions.weekends = !calendarOptions.weekends;
   }
 
-  handleDateSelect(selectInfo: DateSelectArg) {
-    const title = prompt('Please enter a new title for your event');
+  async handleDateSelect(selectInfo: DateSelectArg) {
     const calendarApi = selectInfo.view.calendar;
+    const responseFormAddCours = await this.coursFormComponent.openModal().then(c => {
+      return c;
+    });
 
     calendarApi.unselect(); // clear date selection
-
-    if (title) {
+    console.log("DEBUT " + selectInfo.startStr);
+    console.log("END " + selectInfo.endStr);
+    if (responseFormAddCours) {
       calendarApi.addEvent({
         id: createEventId(),
-        title,
+        title: responseFormAddCours.nomCour,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay
