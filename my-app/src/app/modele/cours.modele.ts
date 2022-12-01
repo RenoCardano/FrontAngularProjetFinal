@@ -8,8 +8,8 @@ export interface Cours{
   nomCour: string,
   heure_debut: string,
   heure_fin: string,
-  classe: any,
-  enseignement: any,
-  salleClasse: any,
-  jourCours: any;
+  classe?: Classe,
+  enseignement: Enseignement,
+  salleClasse: SalleClasse,
+  jourCours: Jour;
 }

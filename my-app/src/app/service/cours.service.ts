@@ -19,7 +19,16 @@ export class CoursService {
   add(cours: Cours) {
     const headers = new HttpHeaders({'Content-Type':'application/json'});
     let body = JSON.stringify(cours);
+    console.log(body);
     this.http.post<Cours>(this.url, body, {headers: headers}).subscribe();
+  }
+
+  update(cours: Cours) {
+    const headers = new HttpHeaders({'Content-Type':'application/json'});
+    let body = JSON.stringify(cours);
+    console.log("ON UPDATE CALL");
+    console.log(cours);
+    this.http.put<Cours>(this.url+"/"+cours.idCours, body, {headers: headers}).subscribe(console.log);
   }
 
   delete(id: string) {

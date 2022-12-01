@@ -4,11 +4,11 @@
 <ng-template id="content" #content let-modal>
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled(false)"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseHandled(false,false,false)"></button>
       </div>
       <div class="modal-body">
           <h2>Formulaire d'ajout de cours</h2>
-           <form [formGroup]="ourform" (ngSubmit)="onCloseHandled(true)">
+           <form [formGroup]="ourform">
              <div class="container">
                <div class="col-md-5 mb-3">
                  <label id="jourCours">Jour: {{getDayFromInt(jourSelected)}}</label>
@@ -34,22 +34,22 @@
                </div>
                <div class="col-md-5 mb-3">
                  <label for="salleClasse">Salle de classe</label>
-                 <select id="salleClasse" class="form-select" aria-label="Default select example" formControlName="salleClasse" aria-describedby="aideSalleClasse">
-                   <option *ngFor="let salle of salleClasses" [value]="salle.idSalleClasse"  [id]="salle.idSalleClasse">{{salle.nom}}</option>
+                 <select [(ngModel)]="selectedSalle" id="salleClasse" class="form-select" aria-label="Default select example" formControlName="salleClasse" aria-describedby="aideSalleClasse">
+                   <option *ngFor="let salle of salleClasses" [ngValue]="salle.idSalleClasse"  [id]="salle.idSalleClasse">{{salle.nom}}</option>
                  </select>
                  <small id="aideSalleClasse" class="form-text" *ngIf="ourform.controls['salleClasse']?.errors?.['required']">La salle de classe est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
                  <label for="matiere">Matière</label>
                  <select [(ngModel)]="selectedMatiere" id="matiere" class="form-select" aria-label="Default select example" formControlName="matiere" aria-describedby="aideMatiere">
-                   <option *ngFor="let matiere of getBindedEnseignements" [ngValue]="matiere"  [id]="matiere.id">{{matiere.nom}}</option>
+                   <option *ngFor="let matiere of getBindedEnseignementsMatieres" [ngValue]="matiere.id"  [id]="matiere.id">{{matiere.nom}}</option>
                  </select>
                  <small id="aideMatiere" class="form-text" *ngIf="ourform.controls['matiere']?.errors?.['required']">La salle de classe est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
                  <label for="enseignant">Enseignant</label>
-                 <select id="enseignant" class="form-select" aria-label="Default select example" formControlName="enseignant" aria-describedby="aideEnseignant">
-                   <option *ngFor="let enseignant of mapEnseignements.get(selectedMatiere)" [ngValue]="enseignant"  [id]="enseignant.idEns">{{enseignant.nom}}</option>
+                 <select [(ngModel)]="selectedEnseignant" id="enseignant" class="form-select" aria-label="Default select example" formControlName="enseignant" aria-describedby="aideEnseignant">
+                   <option *ngFor="let enseignant of getBindedEnseignementsEnseignement(selectedMatiere)" [ngValue]="enseignant.idEns"  [id]="enseignant.idEns">{{enseignant.nom}}</option>
                  </select>
                  <small id="aideEnseignant" class="form-text" *ngIf="ourform.controls['enseignant']?.errors?.['required']">La salle de classe est requise.</small>
                </div>
@@ -59,7 +59,9 @@
                </div>
              </div>
              <div class="modal-footer">
-               <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Ajouter</button>
+               <button (click) ="onCloseHandled(true,false,false)" id="addButton" type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Ajouter</button>
+               <button (click)="onCloseHandled(true,true,false)" id="updateButton" type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Mettre à jour</button>
+               <button (click)="onCloseHandled(false,false,true)" id="deleteButton" type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Supprimer</button>
              </div>
            </form>
        </div>

@@ -66,7 +66,6 @@ export class CalendarComponent implements OnInit{
     const n = this.cs.findAll().subscribe(maliste => {this.cours = maliste; this.size = maliste.length;});
 
     const convert = this.cs.findAll().subscribe((result: any) => {
-      const TODAY_STR = new Date().toISOString().replace(/T.*$/, ''); // YYYY-MM-DD of today
       for (let i = 0; i < result.length; i++) {
         this.courModel = {
           id: result[i].idCours.toString(),
@@ -91,13 +90,31 @@ export class CalendarComponent implements OnInit{
 
   async handleDateSelect(selectInfo: DateSelectArg) {
     const calendarApi = selectInfo.view.calendar;
-    const responseFormAddCours = await this.coursFormComponent.openModal(selectInfo.startStr,selectInfo.endStr,selectInfo.start.getDay()).then(c => {
+    const responseFormAddCours = await this.coursFormComponent.openModal(selectInfo.startStr,selectInfo.endStr,selectInfo.start.getDay(),null,function(){}).then(c => {
       return c;
     }).catch(reason => console.log(reason));
     calendarApi.unselect(); // clear date selection
     if (responseFormAddCours && (typeof responseFormAddCours)!= undefined) {
       calendarApi.addEvent({
-        id: createEventId(),
+        id: ""+responseFormAddCours.idCours,
+        title: responseFormAddCours.nomCour,
+        start: responseFormAddCours.heure_debut,
+        end: responseFormAddCours.heure_fin
+      });
+    }
+  }
+
+  async handleDateUpdate(clickInfo: EventClickArg, cours: Cours) {
+    const calendarApi = clickInfo.view.calendar;
+    // @ts-ignore
+    const responseFormAddCours = await this.coursFormComponent.openModal(cours.heure_debut,cours.heure_fin,cours.jourCours.idJour,(cours as Cours),()=>(clickInfo.event.remove())).then(c => {
+      return c;
+    }).catch(reason => console.log(reason));
+    calendarApi.unselect(); // clear date selection
+    if (responseFormAddCours) {
+      let id = clickInfo.event.id;
+      calendarApi.addEvent({
+        id: id,
         title: responseFormAddCours.nomCour,
         start: responseFormAddCours.heure_debut,
         end: responseFormAddCours.heure_fin
@@ -106,11 +123,8 @@ export class CalendarComponent implements OnInit{
   }
 
   handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      this.cs.delete(clickInfo.event.id),
-      clickInfo.event.remove();
+      this.handleDateUpdate(clickInfo, (this.cours.find(v => ""+v.idCours == clickInfo.event.id) as Cours))
     }
-  }
 
   handleEvents(events: EventApi[]) {
     this.courEventsApi = events;

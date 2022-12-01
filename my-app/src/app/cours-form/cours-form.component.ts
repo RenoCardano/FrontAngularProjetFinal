@@ -8,7 +8,7 @@ import {CoursService} from "../service/cours.service";
 import {Cours} from "../modele/cours.modele";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
-import {Calendar} from "@fullcalendar/core";
+import {Calendar, EventClickArg} from "@fullcalendar/core";
 import {SalleClasse} from "../modele/salleclasse.modele";
 import {SalleClasseService} from "../service/salle-classe.service";
 import {Etablissement} from "../modele/etablissement.modele";
@@ -16,6 +16,7 @@ import {Enseignement} from "../modele/enseignement.modele";
 import {EnseignementService} from "../service/enseignement.service";
 import {Enseignant} from "../modele/enseignant.modele";
 import {Matiere} from "../modele/matiere.modele";
+import {Jour} from "../modele/jour.modele";
 
 interface Hour {
   value: string;
@@ -43,7 +44,11 @@ export class CoursFormComponent implements OnInit{
   salleClasses: SalleClasse[] = [];
   enseignements: Enseignement[] = [];
   mapEnseignements = new Map<Matiere, Enseignant[]>();
-  selectedMatiere!: Matiere;
+  selectedMatiere!: number;
+  selectedEnseignant!: Enseignant;
+  selectedSalle!: number;
+  currentIddCours!: number;
+  delEventFunction!: Function;
 
   constructor(private es: EnseignementService, private scs: SalleClasseService, private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
 
@@ -83,37 +88,44 @@ export class CoursFormComponent implements OnInit{
     });
   }
 
-  findIdEnseignement(enseignant: Enseignant, matiereEnseignee: Matiere): number {
+  findEnseignement(enseignant: Enseignant, matiereEnseignee: Matiere): Enseignement {
     // @ts-ignore
-    let a =  this.enseignements.find(v => v.enseignant?.idEns === enseignant.idEns && v.matiereEnseignee?.id === this.selectedMatiere.id).idEnseignement;
+    let a =  this.enseignements.find(v => v.enseignant?.idEns === enseignant && v.matiereEnseignee?.id === matiereEnseignee);
+    // @ts-ignore
     return a;
   }
 
-  get getBindedEnseignements(){
+  get getBindedEnseignementsMatieres(){
     return Array.from(this.mapEnseignements.keys());
   }
 
-  addCours() {
-    console.log(this.ourform!.value);
+  getBindedEnseignementsEnseignement(id: number){
+    // @ts-ignore
+    return this.mapEnseignements.get(Array.from(this.mapEnseignements.keys()).find(v => v.id === id));
+  }
+
+  addCours(update: boolean) {
     const formValues = this.ourform!.value;
     CoursFormComponent.coursObj = {
-      idCours: 0,
+      idCours: this.currentIddCours,
       nomCour: formValues.nomCour,
       heure_debut: this.startDaySelect+formValues.heure_debut,
       heure_fin: this.endDaySelect+formValues.heure_fin,
-      //classe: null, //TODO ajouter les elements dans cour
-      enseignement: {
-        idEnseignement: this.findIdEnseignement(formValues.enseignant,formValues.matiereEnseignee),
-      },
-      salleClasse: {
-        idSalleClasse: formValues.salleClasse,
-      },
+      classe: formValues.classe,
+      enseignement: this.findEnseignement(formValues.enseignant,formValues.matiere),
+      // @ts-ignore
+      salleClasse: this.salleClasses.find(v => v.idSalleClasse === formValues.salleClasse),
       jourCours: {
         idJour: this.jourSelected
       }
     };
-    console.log("ADDING   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
-    this.cs.add(CoursFormComponent.coursObj);
+    if(update){
+      this.cs.update(CoursFormComponent.coursObj);
+      this.delEventFunction();
+    }else{
+      this.cs.add(CoursFormComponent.coursObj);
+      window.location.reload();
+    }
     this.ourform!.reset();
   }
 
@@ -131,6 +143,7 @@ export class CoursFormComponent implements OnInit{
 
   static coursToString(cours: Cours){
     return `
+            ID: ${cours.idCours}
             Nom: ${cours.nomCour}
             Heure de début: ${cours.heure_debut}
             Heure de fin: ${cours.heure_fin}
@@ -140,27 +153,50 @@ export class CoursFormComponent implements OnInit{
             jourCours: ${cours.jourCours}`
   }
 
-  async openModal(startStr: string, endStr: string, jour: number): Promise<Cours> {
-    this.startDaySelect = startStr.replace(/T.*$/, '');
-    this.endDaySelect = endStr.replace(/T.*$/, '');
+  setupFormWithCours(cours: Cours) {
+    this.currentIddCours = cours.idCours;
+    this.ourform.controls['nomCour'].patchValue(cours.nomCour);
     // @ts-ignore
-    this.startTimeSelect = startStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
+    this.selectedEnseignant = (cours.enseignement.enseignant as Enseignant).idEns;
     // @ts-ignore
-    this.endTimeSelect = endStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
-    this.ourform.controls['heure_debut'].patchValue(this.startTimeSelect);
-    this.ourform.controls['heure_fin'].patchValue(this.endTimeSelect);
-    this.jourSelected = jour;
-    this.modalReference = this.modalService.open(this.modalContent, {centered: true});
+    this.ourform.controls['enseignant'].patchValue((cours.enseignement.enseignant as Enseignant).idEns);
+    // @ts-ignore
+    this.selectedMatiere = (cours.enseignement.matiereEnseignee as Matiere).id;
+    // @ts-ignore
+    this.ourform.controls['matiere'].patchValue((cours.enseignement.matiereEnseignee as Matiere).id);
+    this.selectedSalle = (cours.salleClasse as SalleClasse).idSalleClasse;
+    this.ourform.controls['salleClasse'].patchValue((cours.salleClasse as SalleClasse).idSalleClasse);
+    this.ourform.controls['jourCours'].patchValue((cours.jourCours as Jour));
+  }
+
+  async openModal(startStr: string, endStr: string, jour: number, cours: any, del: Function): Promise<Cours> {
+    this.delEventFunction = del;
+    this.currentIddCours = cours?.idCours;
+      this.startDaySelect = startStr.replace(/T.*$/, '');
+     this.endDaySelect = endStr.replace(/T.*$/, '');
+      // @ts-ignore
+      this.startTimeSelect = startStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
+      // @ts-ignore
+      this.endTimeSelect = endStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
+      this.ourform.controls['heure_debut'].patchValue(this.startTimeSelect);
+      this.ourform.controls['heure_fin'].patchValue(this.endTimeSelect);
+      this.jourSelected = jour;
+      if(cours != null) {
+        this.setupFormWithCours((cours as Cours));
+      }
+      this.modalReference = this.modalService.open(this.modalContent, {centered: true});
     var o = await this.modalReference.result
       .then(function () {
-        console.log("VALIDATE   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
         return CoursFormComponent.coursObj;
       });
     return o;
   }
-  onCloseHandled(doAdd: boolean) {
+  onCloseHandled(doAdd: boolean, doUpdate: boolean, doDelete: boolean) {
     if(doAdd) {
-      this.addCours();
+      this.addCours(doUpdate);
+    }else if(doDelete){
+      this.cs.delete(""+this.currentIddCours);
+      this.delEventFunction();
     }
     this.modalReference.close();
   }
