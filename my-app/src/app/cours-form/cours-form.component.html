@@ -8,7 +8,6 @@
       </div>
       <div class="modal-body">
           <h2>Formulaire d'ajout de cours</h2>
-        <!--   <p *ngFor="let c of cours">{{coursToString(c)}}</p> -->
            <form [formGroup]="ourform" (ngSubmit)="onCloseHandled(true)">
              <div class="container">
                <div class="col-md-5 mb-3">
@@ -34,16 +33,19 @@
                  <small id="aideHeureFin" class="form-text" *ngIf="ourform.controls['heure_fin']?.errors?.['required']">L'heure de fin est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
+                 <label for="salleClasse">Salle de classe</label>
+                 <select id="salleClasse" class="form-select" aria-label="Default select example" formControlName="salleClasse" aria-describedby="aideSalleClasse">
+                   <option *ngFor="let salle of salleClasses" [value]="salle.idSalleClasse"  [id]="salle.idSalleClasse">{{salle.nom}}</option>
+                 </select>
+                 <small id="aideSalleClasse" class="form-text" *ngIf="ourform.controls['salleClasse']?.errors?.['required']">La salle de classe est requise.</small>
+               </div>
+               <div class="col-md-5 mb-3">
                  <label for="classe">Classe</label>
                  <input class="form-control"  id="classe" formControlName="classe" type="text" aria-describedby="aideCompanyName"/>
                </div>
                <div class="col-md-5 mb-3">
                  <label for="enseignement">Enseignement</label>
                  <input class="form-control"  id="enseignement" formControlName="enseignement" type="text" aria-describedby="aideCompanyName"/>
-               </div>
-               <div class="col-md-5 mb-3">
-                 <label for="salleClasse">Heure de fin</label>
-                 <input class="form-control"  id="salleClasse" formControlName="salleClasse" type="text" aria-describedby="aideCompanyName"/>
                </div>
              </div>
              <div class="modal-footer">

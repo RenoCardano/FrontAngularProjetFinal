@@ -9,6 +9,9 @@ import {Cours} from "../modele/cours.modele";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {Calendar} from "@fullcalendar/core";
+import {SalleClasse} from "../modele/salleclasse.modele";
+import {SalleClasseService} from "../service/salle-classe.service";
+import {Etablissement} from "../modele/etablissement.modele";
 
 interface Hour {
   value: string;
@@ -33,10 +36,12 @@ export class CoursFormComponent implements OnInit{
   endDaySelect!: string;
   startDaySelect!: string;
   jourSelected!: number;
+  salleClasses: SalleClasse[] = [];
 
-  constructor(private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
+  constructor(private scs: SalleClasseService, private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
 
   ngOnInit(): void {
+    const n = this.scs.findAll().subscribe(maliste => {this.salleClasses = maliste;});
     this.ourform! = this.fb.group({
       idCours: [],
       nomCour: [, Validators.required],
@@ -59,12 +64,12 @@ export class CoursFormComponent implements OnInit{
       heure_debut: this.startDaySelect+formValues.heure_debut,
       heure_fin: this.endDaySelect+formValues.heure_fin,
       /*classe: null,
-      enseignement: {},
-      salleClasse: {},*/
+      enseignement: {},*/
+      salleClasse: {
+        idSalleClasse: formValues.salleClasse,
+      },
       jourCours: {
-        idJour: this.jourSelected,
-        jour: this.getDayFromInt(this.jourSelected),
-        coursJourList: null
+        idJour: this.jourSelected
       } //TODO ajouter les elements dans cour
     };
     console.log("ADDING   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
@@ -80,7 +85,8 @@ export class CoursFormComponent implements OnInit{
       case 3: return "MERCREDI";
       case 4: return "JEUDI";
       case 5: return "VENDREDI";
-      default: return "SAMEDI";
+      case 6: return "SAMEDI";
+      default: return "DIMANCHE";
     }
   }
 
