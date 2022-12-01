@@ -3,7 +3,6 @@ import {Calendar, CalendarOptions, DateSelectArg, EventApi, EventClickArg, Event
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import {createEventId, INITIAL_EVENTS} from "../utils/event-utils";
-import {CalendarService} from "../service/calendar.service";
 import {CoursFormComponent} from "../cours-form/cours-form.component";
 import {CoursService} from "../service/cours.service";
 import {Validators} from "@angular/forms";
