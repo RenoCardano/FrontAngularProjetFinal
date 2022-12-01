@@ -21,4 +21,8 @@ export class CoursService {
     let body = JSON.stringify(cours);
     this.http.post<Cours>(this.url, body, {headers: headers}).subscribe();
   }
+
+  delete(id: string) {
+    this.http.delete<Cours>(this.url+"/delete/"+id).subscribe();
+  }
 }
