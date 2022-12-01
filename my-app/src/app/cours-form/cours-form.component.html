@@ -40,12 +40,22 @@
                  <small id="aideSalleClasse" class="form-text" *ngIf="ourform.controls['salleClasse']?.errors?.['required']">La salle de classe est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
-                 <label for="classe">Classe</label>
-                 <input class="form-control"  id="classe" formControlName="classe" type="text" aria-describedby="aideCompanyName"/>
+                 <label for="matiere">Matière</label>
+                 <select [(ngModel)]="selectedMatiere" id="matiere" class="form-select" aria-label="Default select example" formControlName="matiere" aria-describedby="aideMatiere">
+                   <option *ngFor="let matiere of getBindedEnseignements" [ngValue]="matiere"  [id]="matiere.id">{{matiere.nom}}</option>
+                 </select>
+                 <small id="aideMatiere" class="form-text" *ngIf="ourform.controls['matiere']?.errors?.['required']">La salle de classe est requise.</small>
                </div>
                <div class="col-md-5 mb-3">
-                 <label for="enseignement">Enseignement</label>
-                 <input class="form-control"  id="enseignement" formControlName="enseignement" type="text" aria-describedby="aideCompanyName"/>
+                 <label for="enseignant">Enseignant</label>
+                 <select id="enseignant" class="form-select" aria-label="Default select example" formControlName="enseignant" aria-describedby="aideEnseignant">
+                   <option *ngFor="let enseignant of mapEnseignements.get(selectedMatiere)" [ngValue]="enseignant"  [id]="enseignant.idEns">{{enseignant.nom}}</option>
+                 </select>
+                 <small id="aideEnseignant" class="form-text" *ngIf="ourform.controls['enseignant']?.errors?.['required']">La salle de classe est requise.</small>
+               </div>
+               <div class="col-md-5 mb-3">
+                 <label for="classe">Classe</label>
+                 <input class="form-control"  id="classe" formControlName="classe" type="text" aria-describedby="aideCompanyName"/>
                </div>
              </div>
              <div class="modal-footer">

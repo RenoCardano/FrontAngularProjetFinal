@@ -12,6 +12,10 @@ import {Calendar} from "@fullcalendar/core";
 import {SalleClasse} from "../modele/salleclasse.modele";
 import {SalleClasseService} from "../service/salle-classe.service";
 import {Etablissement} from "../modele/etablissement.modele";
+import {Enseignement} from "../modele/enseignement.modele";
+import {EnseignementService} from "../service/enseignement.service";
+import {Enseignant} from "../modele/enseignant.modele";
+import {Matiere} from "../modele/matiere.modele";
 
 interface Hour {
   value: string;
@@ -37,23 +41,57 @@ export class CoursFormComponent implements OnInit{
   startDaySelect!: string;
   jourSelected!: number;
   salleClasses: SalleClasse[] = [];
+  enseignements: Enseignement[] = [];
+  mapEnseignements = new Map<Matiere, Enseignant[]>();
+  selectedMatiere!: Matiere;
 
-  constructor(private scs: SalleClasseService, private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
+  constructor(private es: EnseignementService, private scs: SalleClasseService, private cs: CoursService, private fb: FormBuilder, private modalService: NgbModal) { }
 
   ngOnInit(): void {
-    const n = this.scs.findAll().subscribe(maliste => {this.salleClasses = maliste;});
+    const s = this.scs.findAll().subscribe(maliste => {this.salleClasses = maliste;});
+    const e = this.es.findAll().subscribe(maliste => {this.enseignements = maliste;},error => {},() => {
+      this.enseignements.forEach((value) =>{
+        let done = false;
+        Array.from(this.mapEnseignements.keys()).forEach((v: Matiere)=>{
+          // @ts-ignore
+          if(v.id === value.matiereEnseignee.id){
+            // @ts-ignore
+            this.mapEnseignements.get(v).push(value.enseignant);
+            done = true;
+            return;
+          }
+        });
+        if(!done) {
+          if (value.matiereEnseignee) {
+            // @ts-ignore
+            this.mapEnseignements.set(value.matiereEnseignee, [value.enseignant]);
+          }
+        }
+      });
+    });
+
     this.ourform! = this.fb.group({
       idCours: [],
       nomCour: [, Validators.required],
       heure_debut: [, Validators.required],
       heure_fin: [, Validators.required],
+      matiere: [],
+      enseignant: [],
       classe: [],
-      enseignement: [],
       salleClasse: [],
       jourCours: [],
     });
   }
 
+  findIdEnseignement(enseignant: Enseignant, matiereEnseignee: Matiere): number {
+    // @ts-ignore
+    let a =  this.enseignements.find(v => v.enseignant?.idEns === enseignant.idEns && v.matiereEnseignee?.id === this.selectedMatiere.id).idEnseignement;
+    return a;
+  }
+
+  get getBindedEnseignements(){
+    return Array.from(this.mapEnseignements.keys());
+  }
 
   addCours() {
     console.log(this.ourform!.value);
@@ -63,14 +101,16 @@ export class CoursFormComponent implements OnInit{
       nomCour: formValues.nomCour,
       heure_debut: this.startDaySelect+formValues.heure_debut,
       heure_fin: this.endDaySelect+formValues.heure_fin,
-      /*classe: null,
-      enseignement: {},*/
+      //classe: null, //TODO ajouter les elements dans cour
+      enseignement: {
+        idEnseignement: this.findIdEnseignement(formValues.enseignant,formValues.matiereEnseignee),
+      },
       salleClasse: {
         idSalleClasse: formValues.salleClasse,
       },
       jourCours: {
         idJour: this.jourSelected
-      } //TODO ajouter les elements dans cour
+      }
     };
     console.log("ADDING   " + CoursFormComponent.coursToString(CoursFormComponent.coursObj));
     this.cs.add(CoursFormComponent.coursObj);
@@ -78,7 +118,6 @@ export class CoursFormComponent implements OnInit{
   }
 
   getDayFromInt(toSwitch: number): string {
-    console.log(toSwitch);
     switch (toSwitch) {
       case 1: return "LUNDI";
       case 2: return "MARDI";
@@ -102,15 +141,12 @@ export class CoursFormComponent implements OnInit{
   }
 
   async openModal(startStr: string, endStr: string, jour: number): Promise<Cours> {
-    console.log(this.modalContent);
     this.startDaySelect = startStr.replace(/T.*$/, '');
     this.endDaySelect = endStr.replace(/T.*$/, '');
     // @ts-ignore
     this.startTimeSelect = startStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
     // @ts-ignore
     this.endTimeSelect = endStr.match(/T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/)?.pop();
-    console.log(this.startTimeSelect);
-    console.log(this.endTimeSelect);
     this.ourform.controls['heure_debut'].patchValue(this.startTimeSelect);
     this.ourform.controls['heure_fin'].patchValue(this.endTimeSelect);
     this.jourSelected = jour;
