@@ -18,6 +18,7 @@ import {Enseignant} from "../modele/enseignant.modele";
 import {Matiere} from "../modele/matiere.modele";
 import {Jour} from "../modele/jour.modele";
 import {br} from "@fullcalendar/core/internal-common";
+import {Classe} from "../modele/classe.modele";
 
 interface Hour {
   value: string;
@@ -165,6 +166,7 @@ export class CoursFormComponent implements OnInit{
     this.selectedSalle = (cours.salleClasse as SalleClasse).idSalleClasse;
     this.ourform.controls['salleClasse'].patchValue((cours.salleClasse as SalleClasse).idSalleClasse);
     this.ourform.controls['jourCours'].patchValue((cours.jourCours as Jour));
+    this.ourform.controls['classe'].patchValue((cours.classe as Classe).idClasse);
   }
 
   async openModal(startStr: string, endStr: string, jour: number, cours: any, del: Function): Promise<Cours> {

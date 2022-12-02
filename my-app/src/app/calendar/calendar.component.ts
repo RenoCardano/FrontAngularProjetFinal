@@ -126,6 +126,7 @@ export class CalendarComponent implements OnInit{
         color: responseFormAddCours.enseignement.matiereEnseignee.couleur,
         description: CoursFormComponent.coursToString(responseFormAddCours)
       });
+      window.location.reload();
     }
   }
 
