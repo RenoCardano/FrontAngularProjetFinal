@@ -67,11 +67,14 @@ export class CalendarComponent implements OnInit{
 
     const convert = this.cs.findAll().subscribe((result: any) => {
       for (let i = 0; i < result.length; i++) {
+        console.log(result[i].enseignement.matiereEnseignee.couleur);
         this.courModel = {
           id: result[i].idCours.toString(),
-          title: result[i].nomCour,
+          title: CoursFormComponent.coursToString(result[i]),
           start: result[i].heure_debut,
-          end: result[i].heure_fin
+          end: result[i].heure_fin,
+          color: result[i].enseignement.matiereEnseignee.couleur,
+          description: CoursFormComponent.coursToString(result[i])
         };
         this.courEvents.push(this.courModel);
       }
@@ -97,9 +100,11 @@ export class CalendarComponent implements OnInit{
     if (responseFormAddCours && (typeof responseFormAddCours)!= undefined) {
       calendarApi.addEvent({
         id: ""+responseFormAddCours.idCours,
-        title: responseFormAddCours.nomCour,
+        title: CoursFormComponent.coursToString(responseFormAddCours),
         start: responseFormAddCours.heure_debut,
-        end: responseFormAddCours.heure_fin
+        end: responseFormAddCours.heure_fin,
+        color: responseFormAddCours.enseignement.matiereEnseignee.couleur,
+        description: CoursFormComponent.coursToString(responseFormAddCours)
       });
     }
   }
@@ -114,10 +119,12 @@ export class CalendarComponent implements OnInit{
     if (responseFormAddCours) {
       let id = clickInfo.event.id;
       calendarApi.addEvent({
-        id: id,
-        title: responseFormAddCours.nomCour,
+        id: ""+responseFormAddCours.idCours,
+        title: CoursFormComponent.coursToString(responseFormAddCours),
         start: responseFormAddCours.heure_debut,
-        end: responseFormAddCours.heure_fin
+        end: responseFormAddCours.heure_fin,
+        color: responseFormAddCours.enseignement.matiereEnseignee.couleur,
+        description: CoursFormComponent.coursToString(responseFormAddCours)
       });
     }
   }

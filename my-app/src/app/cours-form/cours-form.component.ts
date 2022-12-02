@@ -17,6 +17,7 @@ import {EnseignementService} from "../service/enseignement.service";
 import {Enseignant} from "../modele/enseignant.modele";
 import {Matiere} from "../modele/matiere.modele";
 import {Jour} from "../modele/jour.modele";
+import {br} from "@fullcalendar/core/internal-common";
 
 interface Hour {
   value: string;
@@ -143,14 +144,11 @@ export class CoursFormComponent implements OnInit{
 
   static coursToString(cours: Cours){
     return `
-            ID: ${cours.idCours}
             Nom: ${cours.nomCour}
-            Heure de début: ${cours.heure_debut}
-            Heure de fin: ${cours.heure_fin}
-            classe: ${cours.classe}
-            enseignement: ${cours.enseignement}
-            salleClasse: ${cours.salleClasse}
-            jourCours: ${cours.jourCours}`
+            Classe: ${cours.classe?.idClasse}
+            Enseignant: ${cours.enseignement.enseignant.nom}
+            Enseignant: ${cours.enseignement.matiereEnseignee.nom}
+            SalleClasse: ${cours.salleClasse.nom}`
   }
 
   setupFormWithCours(cours: Cours) {
