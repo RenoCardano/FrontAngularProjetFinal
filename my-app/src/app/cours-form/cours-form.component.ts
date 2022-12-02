@@ -146,7 +146,7 @@ export class CoursFormComponent implements OnInit{
   static coursToString(cours: Cours){
     return `
             Nom: ${cours.nomCour}
-            Classe: ${cours.classe?.idClasse}
+            Classe: ${cours.classe?.nomClasse}
             Enseignant: ${cours.enseignement.enseignant.nom}
             Enseignant: ${cours.enseignement.matiereEnseignee.nom}
             SalleClasse: ${cours.salleClasse.nom}`
@@ -166,7 +166,7 @@ export class CoursFormComponent implements OnInit{
     this.selectedSalle = (cours.salleClasse as SalleClasse).idSalleClasse;
     this.ourform.controls['salleClasse'].patchValue((cours.salleClasse as SalleClasse).idSalleClasse);
     this.ourform.controls['jourCours'].patchValue((cours.jourCours as Jour));
-    this.ourform.controls['classe'].patchValue((cours.classe as Classe).idClasse);
+    this.ourform.controls['classe'].patchValue((cours.classe as Classe).nomClasse);
   }
 
   async openModal(startStr: string, endStr: string, jour: number, cours: any, del: Function): Promise<Cours> {
